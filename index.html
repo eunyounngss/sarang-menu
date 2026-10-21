@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<title>사랑이의 식사메뉴 추천</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  /* Layout: 돌림판(왼쪽) + 메뉴 목록(오른쪽), 좁은 화면에서는 한 줄로 쌓임. 스티커처럼 도톰한 버튼과 파스텔 점무늬 배경. */
+  :root {
+    --bg: #FFF6EC;
+    --dots: #FFE0C2;
+    --surface: #FFFFFF;
+    --fg: #4F3328;
+    --muted: #94705F;
+    --line: #F6D5BC;
+    --accent: #FF7B54;
+    --accent-deep: #D95A34;
+    --accent-ink: #FFFFFF;
+    --lav: #9B8CFF;
+    --mint: #6EDCC4;
+    --soft: #FFEEDF;
+    --display: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    --body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #2E2230;
+      --dots: #3B2D3E;
+      --surface: #3D2E40;
+      --fg: #FFEBDD;
+      --muted: #CDAE9C;
+      --line: #5C4561;
+      --accent: #FF9068;
+      --accent-deep: #C8532E;
+      --accent-ink: #3A1A10;
+      --lav: #B3A6FF;
+      --mint: #7FE3CD;
+      --soft: #4A3850;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #2E2230;
+    --dots: #3B2D3E;
+    --surface: #3D2E40;
+    --fg: #FFEBDD;
+    --muted: #CDAE9C;
+    --line: #5C4561;
+    --accent: #FF9068;
+    --accent-deep: #C8532E;
+    --accent-ink: #3A1A10;
+    --lav: #B3A6FF;
+    --mint: #7FE3CD;
+    --soft: #4A3850;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--dots) 2.5px, transparent 3px);
+    background-size: 26px 26px;
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+    padding-block: 28px 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 22px; }
+  .tag {
+    display: inline-block;
+    background: var(--lav);
+    color: var(--accent-ink);
+    font-family: var(--display);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    padding: 3px 14px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag { color: #2E2230; } }
+  :root[data-theme="dark"] .tag { color: #2E2230; }
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(30px, 7vw, 46px);
+    line-height: 1.15;
+    margin: 0;
+    text-wrap: balance;
+    color: var(--accent);
+    text-shadow: 0 3px 0 var(--line);
+  }
+  .sub { margin: 8px 0 0; color: var(--muted); }
+
+  .stage { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: start; }
+  @media (min-width: 860px) { .stage { grid-template-columns: 1fr 1fr; gap: 32px; } }
+  .stage > * { min-width: 0; }
+
+  .card {
+    background: var(--surface);
+    border: 3px solid var(--line);
+    border-radius: 28px;
+    padding: 20px;
+    box-shadow: 0 6px 0 var(--line);
+  }
+
+  /* 돌림판 */
+  .wheel-box { position: relative; width: 100%; max-width: 360px; margin: 6px auto 0; aspect-ratio: 1; }
+  #wheel {
+    display: block; width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 6px solid var(--surface);
+    box-shadow: 0 0 0 4px var(--accent), 0 8px 0 4px var(--accent-deep);
+    transform: rotate(0deg);
+  }
+  .pointer {
+    position: absolute; top: -14px; left: 50%; width: 38px; height: 44px;
+    transform: translateX(-50%); z-index: 3;
+    filter: drop-shadow(0 3px 0 rgba(0,0,0,.15));
+  }
+  .hub {
+    position: absolute; left: 50%; top: 50%; width: 22%; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: var(--surface); border: 5px solid var(--accent); border-radius: 50%; z-index: 2;
+  }
+  .eye { position: absolute; top: 36%; width: 12%; height: 17%; background: var(--fg); border-radius: 50%; }
+  .eye.l { left: 26%; } .eye.r { right: 26%; }
+  .cheek { position: absolute; top: 56%; width: 15%; height: 10%; background: var(--accent); opacity: .45; border-radius: 50%; }
+  .cheek.l { left: 10%; } .cheek.r { right: 10%; }
+  .mouth {
+    position: absolute; left: 50%; top: 56%; width: 26%; height: 15%;
+    transform: translateX(-50%);
+    border-bottom: 3px solid var(--fg); border-radius: 0 0 50% 50%;
+  }
+  .hub.spinning .mouth { width: 13%; height: 17%; border: 3px solid var(--fg); border-radius: 50%; top: 58%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .eye { animation: blink 4s infinite; }
+    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+  }
+
+  .spin-btn {
+    display: block; width: 100%; margin-top: 26px;
+    font-family: var(--display); font-size: 24px; letter-spacing: 0.03em;
+    background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 22px; padding: 14px 18px;
+    box-shadow: 0 6px 0 var(--accent-deep);
+    cursor: pointer;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .spin-btn:hover { transform: translateY(-1px); box-shadow: 0 7px 0 var(--accent-deep); }
+  .spin-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--accent-deep); }
+  .spin-btn:disabled { opacity: .7; cursor: default; transform: translateY(3px); box-shadow: 0 3px 0 var(--accent-deep); }
+  button:focus-visible, input:focus-visible { outline: 3px solid var(--lav); outline-offset: 2px; }
+
+  .result {
+    position: relative; margin-top: 18px; min-height: 92px;
+    background: var(--soft); border: 3px dashed var(--line); border-radius: 22px;
+    padding: 12px 16px; text-align: center;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px;
+    overflow: hidden;
+  }
+  .result .hint { color: var(--muted); }
+  .result small { color: var(--muted); font-size: 15px; }
+  .result strong {
+    font-family: var(--display); font-weight: 400; font-size: clamp(30px, 8vw, 40px);
+    color: var(--accent); line-height: 1.2; overflow-wrap: anywhere; text-wrap: balance;
+  }
+  .result.pop strong { animation: pop .5s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes pop { 0% { transform: scale(.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .confetti { position: absolute; top: -12px; width: 10px; height: 14px; border-radius: 3px; animation: fall 1.6s ease-in forwards; pointer-events: none; }
+  @keyframes fall { to { transform: translateY(140px) rotate(540deg); opacity: 0; } }
+
+  /* 메뉴 목록 */
+  h2 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 0 0 4px; color: var(--lav); }
+  .count { color: var(--muted); margin: 0 0 14px; font-size: 14px; }
+
+  .add-form { display: flex; gap: 8px; margin-bottom: 14px; }
+  .add-form input {
+    flex: 1; min-width: 0;
+    font: inherit; font-size: 17px; color: var(--fg);
+    background: var(--surface); border: 3px solid var(--line); border-radius: 16px; padding: 9px 14px;
+  }
+  .add-form input::placeholder { color: var(--muted); opacity: .8; }
+  .add-btn {
+    flex: none;
+    font-family: var(--display); font-size: 18px;
+    background: var(--mint); color: #24493F;
+    border: 0; border-radius: 16px; padding: 0 18px;
+    box-shadow: 0 5px 0 #3FB79D;
+    cursor: pointer; transition: transform .08s, box-shadow .08s;
+  }
+  .add-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #3FB79D; }
+  .add-btn:disabled { opacity: .55; cursor: default; }
+  .msg { min-height: 22px; margin: -6px 0 8px; font-size: 14px; color: var(--accent-deep); }
+
+  ul.rows {
+    list-style: none; margin: 0; padding: 2px 6px 6px 2px;
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 380px; overflow-y: auto;
+  }
+  .row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--soft); border: 3px solid transparent; border-radius: 18px; padding: 3px 8px 3px 12px;
+  }
+  .row.won { border-color: var(--accent); }
+  .dot { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--line); }
+  .row input {
+    flex: 1; min-width: 0;
+    font: inherit; font-size: 17px; color: var(--fg);
+    background: transparent; border: 0; padding: 8px 4px;
+  }
+  .row input::placeholder { color: var(--muted); opacity: .7; }
+  .del {
+    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    border: 0; background: var(--surface); color: var(--muted);
+    font-size: 20px; line-height: 1; cursor: pointer;
+    box-shadow: 0 2px 0 var(--line);
+  }
+  .del:hover:not(:disabled) { color: var(--accent-deep); }
+  .del:disabled { opacity: .35; cursor: default; }
+
+  .reset-btn {
+    display: block; margin: 14px auto 0;
+    font: inherit; font-size: 14px; color: var(--muted);
+    background: transparent; border: 2px dashed var(--line); border-radius: 999px; padding: 6px 16px;
+    cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--accent-deep); border-color: var(--accent); }
+  footer { text-align: center; margin-top: 26px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="tag">오늘 뭐 먹지?</span>
+    <h1>사랑이의 식사메뉴 추천</h1>
+    <p class="sub">고민될 땐 돌려돌려 돌림판!</p>
+  </header>
+
+  <main class="stage">
+    <section class="card" aria-label="돌림판">
+      <div class="wheel-box">
+        <svg class="pointer" viewBox="0 0 38 44" aria-hidden="true">
+          <path d="M19 42 L4 12 Q2 4 10 3 L28 3 Q36 4 34 12 Z" fill="#FF7B54" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round"/>
+          <circle cx="19" cy="14" r="4.5" fill="#FFFFFF"/>
+        </svg>
+        <canvas id="wheel" width="720" height="720" role="img" aria-label="메뉴가 나뉜 돌림판"></canvas>
+        <div class="hub" id="hub" aria-hidden="true">
+          <span class="eye l"></span><span class="eye r"></span>
+          <span class="cheek l"></span><span class="cheek r"></span>
+          <span class="mouth"></span>
+        </div>
+      </div>
+      <button class="spin-btn" id="spin" type="button">메뉴 뽑기!</button>
+      <div class="result" id="result" aria-live="polite"></div>
+    </section>
+
+    <section class="card" aria-label="메뉴 목록">
+      <h2>메뉴 목록</h2>
+      <p class="count" id="count"></p>
+      <form class="add-form" id="addForm" autocomplete="off">
+        <input type="text" id="newItem" maxlength="14" placeholder="먹고 싶은 메뉴를 적어요" aria-label="새 메뉴 이름">
+        <button class="add-btn" id="add" type="submit">추가</button>
+      </form>
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <ul class="rows" id="rows"></ul>
+      <button class="reset-btn" id="reset" type="button">기본 메뉴로 되돌리기</button>
+    </section>
+  </main>
+
+  <footer>바꾼 메뉴는 이 브라우저에 저장돼요</footer>
+</div>
+
+<script>
+(function () {
+  var PALETTE = ['#FFB3C7','#BFD7FF','#FFE29A','#BDEBD3','#D9C7FF','#FFC9A8','#A9E5EA','#F7B8EA','#CDEBA3','#FFD0D0','#B6C4FF','#F5E1A4'];
+  var DEFAULTS = ['김치찌개','된장찌개','비빔밥','불고기','삼겹살','치킨','떡볶이','김밥','라멘','초밥','돈까스','파스타','피자','햄버거','쌀국수','마라탕'];
+  var MAX = 24, MIN = 2, KEY = 'sarang-menu-items', SPIN_MS = 4800;
+
+  var canvas = document.getElementById('wheel');
+  var ctx = canvas.getContext('2d');
+  var rowsEl = document.getElementById('rows');
+  var form = document.getElementById('addForm');
+  var newInput = document.getElementById('newItem');
+  var addBtn = document.getElementById('add');
+  var spinBtn = document.getElementById('spin');
+  var resultEl = document.getElementById('result');
+  var countEl = document.getElementById('count');
+  var msgEl = document.getElementById('msg');
+  var resetBtn = document.getElementById('reset');
+  var hub = document.getElementById('hub');
+
+  var items = load() || DEFAULTS.slice();
+  var rotation = 0;
+  var spinning = false;
+  var timer = null;
+  var resetArmed = false;
+  var resetTimer = null;
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var arr = JSON.parse(raw);
+      if (Array.isArray(arr) && arr.length >= MIN && arr.length <= MAX && arr.every(function (s) { return typeof s === 'string'; })) return arr;
+    } catch (e) {}
+    return null;
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {}
+  }
+
+  function colorAt(i, n) {
+    var c = PALETTE[i % PALETTE.length];
+    if (i > 0 && i === n - 1 && i % PALETTE.length === 0) c = PALETTE[6];
+    return c;
+  }
+
+  function valid() {
+    var out = [];
+    items.forEach(function (t, i) { var s = t.trim(); if (s) out.push({ text: s, i: i }); });
+    return out;
+  }
+
+  var FONT = 'Jua, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+  function fitText(text, maxWidth, size) {
+    var s = size;
+    ctx.font = s + 'px ' + FONT;
+    while (ctx.measureText(text).width > maxWidth && s > 16) {
+      s -= 2;
+      ctx.font = s + 'px ' + FONT;
+    }
+    var t = text;
+    while (ctx.measureText(t).width > maxWidth && t.length > 1) {
+      t = t.slice(0, -1);
+      if (ctx.measureText(t + '…').width <= maxWidth) { t = t + '…'; break; }
+    }
+    return t;
+  }
+
+  function drawWheel() {
+    var W = canvas.width, c = W / 2, r = c - 6;
+    ctx.clearRect(0, 0, W, W);
+    var list = valid();
+    var n = list.length;
+    if (n < 2) {
+      ctx.fillStyle = '#FFEEDF';
+      ctx.beginPath(); ctx.arc(c, c, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#94705F';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '38px ' + FONT;
+      ctx.fillText('메뉴를 2개 이상', c, c - 74);
+      ctx.fillText('적어주세요', c, c - 74 + 48);
+      return;
+    }
+    var seg = (Math.PI * 2) / n;
+    for (var k = 0; k < n; k++) {
+      var a0 = -Math.PI / 2 + k * seg;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.arc(c, c, r, a0, a0 + seg);
+      ctx.closePath();
+      ctx.fillStyle = colorAt(k, n);
+      ctx.fill();
+      ctx.lineWidth = n > 14 ? 4 : 6;
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.stroke();
+    }
+    var base = n <= 6 ? 42 : n <= 10 ? 34 : n <= 16 ? 28 : 22;
+    for (var j = 0; j < n; j++) {
+      ctx.save();
+      ctx.translate(c, c);
+      ctx.rotate(-Math.PI / 2 + (j + 0.5) * seg);
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#4F3328';
+      var label = fitText(list[j].text, r - 130, base);
+      ctx.fillText(label, r - 30, 2);
+      ctx.restore();
+    }
+  }
+
+  function renderRows(focusIdx) {
+    rowsEl.innerHTML = '';
+    var n = items.length;
+    items.forEach(function (text, i) {
+      var li = document.createElement('li');
+      li.className = 'row';
+      li.dataset.i = String(i);
+
+      var dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = colorAt(i, n);
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'opt-' + i;
+      input.maxLength = 14;
+      input.value = text;
+      input.placeholder = '메뉴 ' + (i + 1);
+      input.setAttribute('aria-label', '메뉴 ' + (i + 1));
+      input.addEventListener('input', function () {
+        items[i] = input.value;
+        save();
+        drawWheel();
+        updateCount();
+        clearResult();
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+      });
+
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del';
+      del.textContent = '×';
+      del.setAttribute('aria-label', (text || '메뉴 ' + (i + 1)) + ' 삭제');
+      del.disabled = n <= MIN;
+      del.addEventListener('click', function () { removeItem(i); });
+
+      li.appendChild(dot);
+      li.appendChild(input);
+      li.appendChild(del);
+      rowsEl.appendChild(li);
+    });
+    var full = n >= MAX;
+    addBtn.disabled = full;
+    newInput.disabled = full;
+    newInput.placeholder = full ? '최대 ' + MAX + '개까지 넣을 수 있어요' : '먹고 싶은 메뉴를 적어요';
+    updateCount();
+    if (typeof focusIdx === 'number') {
+      var li2 = rowsEl.children[focusIdx];
+      if (li2) li2.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  function updateCount() {
+    countEl.textContent = '지금 ' + valid().length + '개가 돌림판에 올라가 있어요 (최대 ' + MAX + '개)';
+  }
+
+  function showMsg(t) {
+    msgEl.textContent = t || '';
+  }
+
+  function addItem(e) {
+    if (e) e.preventDefault();
+    if (spinning) return;
+    var t = newInput.value.trim();
+    if (!t) { showMsg('메뉴 이름을 먼저 적어주세요'); newInput.focus(); return; }
+    if (items.length >= MAX) { showMsg('메뉴는 최대 ' + MAX + '개까지예요'); return; }
+    var dup = items.some(function (x) { return x.trim() === t; });
+    if (dup) { showMsg('"' + t + '"은(는) 이미 있어요'); return; }
+    items.push(t);
+    newInput.value = '';
+    showMsg('');
+    save();
+    renderRows(items.length - 1);
+    drawWheel();
+    clearResult();
+    newInput.focus();
+  }
+
+  function removeItem(i) {
+    if (items.length <= MIN || spinning) return;
+    items.splice(i, 1);
+    showMsg('');
+    save();
+    renderRows();
+    drawWheel();
+    clearResult();
+  }
+
+  function clearResult() {
+    resultEl.className = 'result';
+    resultEl.innerHTML = '<span class="hint">돌림판을 돌려서 정해봐요</span>';
+    var won = rowsEl.querySelector('.won');
+    if (won) won.classList.remove('won');
+  }
+
+  function randInt(n) {
+    try {
+      var a = new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0] % n;
+    } catch (e) {
+      return Math.floor(Math.random() * n);
+    }
+  }
+
+  function confetti() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    for (var k = 0; k < 26; k++) {
+      var p = document.createElement('span');
+      p.className = 'confetti';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.background = PALETTE[k % PALETTE.length];
+      p.style.animationDelay = (Math.random() * 0.4) + 's';
+      resultEl.appendChild(p);
+      (function (el) { setTimeout(function () { el.remove(); }, 2200); })(p);
+    }
+  }
+
+  function setBusy(b) {
+    spinning = b;
+    spinBtn.disabled = b;
+    resetBtn.disabled = b;
+    newInput.disabled = b || items.length >= MAX;
+    addBtn.disabled = b || items.length >= MAX;
+  }
+
+  function spin() {
+    if (spinning) return;
+    var list = valid();
+    if (list.length < 2) {
+      resultEl.className = 'result';
+      resultEl.innerHTML = '<span class="hint">메뉴를 2개 이상 적어주세요</span>';
+      return;
+    }
+    setBusy(true);
+    hub.classList.add('spinning');
+    clearResult();
+    resultEl.innerHTML = '<span class="hint">두근두근...</span>';
+
+    var n = list.length;
+    var winner = randInt(n);
+    var segDeg = 360 / n;
+    var jitter = (Math.random() - 0.5) * segDeg * 0.7;
+    var desired = (((-(winner + 0.5) * segDeg + jitter) % 360) + 360) % 360;
+    var curMod = ((rotation % 360) + 360) % 360;
+    var delta = (desired - curMod + 360) % 360;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var turns = reduce ? 1 : 6;
+    var dur = reduce ? 600 : SPIN_MS;
+    rotation = rotation + turns * 360 + delta;
+
+    canvas.style.transition = 'transform ' + dur + 'ms cubic-bezier(.12,.72,.08,1)';
+    canvas.style.transform = 'rotate(' + rotation + 'deg)';
+
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      setBusy(false);
+      spinBtn.textContent = '한 번 더 뽑기';
+      hub.classList.remove('spinning');
+      var w = list[winner];
+      resultEl.className = 'result pop';
+      resultEl.innerHTML = '<small>오늘의 메뉴는</small><strong></strong>';
+      resultEl.querySelector('strong').textContent = w.text;
+      var row = rowsEl.querySelector('.row[data-i="' + w.i + '"]');
+      if (row) { row.classList.add('won'); row.scrollIntoView({ block: 'nearest' }); }
+      confetti();
+    }, dur + 80);
+  }
+
+  function resetItems() {
+    if (spinning) return;
+    if (!resetArmed) {
+      resetArmed = true;
+      resetBtn.textContent = '정말 되돌릴까요? 한 번 더 누르면 돼요';
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(disarm, 4000);
+      return;
+    }
+    disarm();
+    items = DEFAULTS.slice();
+    save();
+    showMsg('');
+    renderRows();
+    drawWheel();
+    clearResult();
+  }
+  function disarm() {
+    resetArmed = false;
+    resetBtn.textContent = '기본 메뉴로 되돌리기';
+  }
+
+  spinBtn.addEventListener('click', spin);
+  form.addEventListener('submit', addItem);
+  resetBtn.addEventListener('click', resetItems);
+  newInput.addEventListener('input', function () { showMsg(''); });
+
+  renderRows();
+  clearResult();
+  drawWheel();
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('40px Jua', '메뉴').then(drawWheel).catch(function () {});
+    if (document.fonts.ready) document.fonts.ready.then(drawWheel).catch(function () {});
+  }
+})();
+</script>
+
+</body>
+</html>
