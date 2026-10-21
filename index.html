@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
 <style>
-  /* Layout: 돌림판(왼쪽) + 메뉴 목록(오른쪽), 좁은 화면에서는 한 줄로 쌓임. 스티커처럼 도톰한 버튼과 파스텔 점무늬 배경. */
+  /* Layout: 밥공기 마스코트 헤더 + 돌림판/결과(왼쪽) + 메뉴 목록(오른쪽). 좁은 화면에서는 한 줄로 쌓임. 스티커처럼 도톰한 버튼, 파스텔 점무늬 배경. */
   :root {
     --bg: #FFF6EC;
     --dots: #FFE0C2;
@@ -19,9 +19,13 @@
     --accent: #FF7B54;
     --accent-deep: #D95A34;
     --accent-ink: #FFFFFF;
+    --pink: #FF8FB3;
     --lav: #9B8CFF;
     --mint: #6EDCC4;
+    --mint-deep: #3FB79D;
+    --mint-ink: #24493F;
     --soft: #FFEEDF;
+    --sun: #FFD76A;
     --display: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     --body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   }
@@ -36,9 +40,13 @@
       --accent: #FF9068;
       --accent-deep: #C8532E;
       --accent-ink: #3A1A10;
+      --pink: #FF9DBB;
       --lav: #B3A6FF;
       --mint: #7FE3CD;
+      --mint-deep: #3FB79D;
+      --mint-ink: #1E3A33;
       --soft: #4A3850;
+      --sun: #FFD76A;
       color-scheme: dark;
     }
   }
@@ -52,9 +60,13 @@
     --accent: #FF9068;
     --accent-deep: #C8532E;
     --accent-ink: #3A1A10;
+    --pink: #FF9DBB;
     --lav: #B3A6FF;
     --mint: #7FE3CD;
+    --mint-deep: #3FB79D;
+    --mint-ink: #1E3A33;
     --soft: #4A3850;
+    --sun: #FFD76A;
     color-scheme: dark;
   }
 
@@ -67,48 +79,79 @@
     font-family: var(--body);
     font-size: 16px;
     line-height: 1.5;
-    padding-block: 28px 40px;
+    padding-block: 22px 40px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
+    overflow-x: hidden;
   }
-  .wrap { max-width: 960px; margin: 0 auto; }
+  .wrap { max-width: 980px; margin: 0 auto; }
 
-  header { text-align: center; margin-bottom: 22px; }
+  /* 헤더 */
+  header { text-align: center; margin-bottom: 22px; position: relative; }
+  .mascot { width: 112px; height: auto; display: block; margin: 0 auto 2px; overflow: visible; }
+  .mascot .rice { fill: var(--surface); stroke: var(--line); stroke-width: 4; stroke-linejoin: round; }
+  .mascot .bowl { fill: var(--accent); stroke: var(--accent-deep); stroke-width: 3; stroke-linejoin: round; }
+  .mascot .shine { fill: none; stroke: #fff; stroke-width: 4; stroke-linecap: round; opacity: .6; }
+  .mascot .face { fill: var(--fg); }
+  .mascot .blush { fill: var(--pink); opacity: .6; }
+  .mascot .smile { fill: none; stroke: var(--fg); stroke-width: 3; stroke-linecap: round; }
+  .mascot .heart { fill: var(--pink); }
   .tag {
     display: inline-block;
     background: var(--lav);
     color: var(--accent-ink);
     font-family: var(--display);
-    font-size: 14px;
+    font-size: 15px;
     letter-spacing: 0.04em;
-    padding: 3px 14px;
+    padding: 3px 16px;
     border-radius: 999px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    transform: rotate(-3deg);
+    box-shadow: 0 3px 0 rgba(0,0,0,.12);
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag { color: #2E2230; } }
   :root[data-theme="dark"] .tag { color: #2E2230; }
   h1 {
     font-family: var(--display);
     font-weight: 400;
-    font-size: clamp(30px, 7vw, 46px);
+    font-size: clamp(32px, 8vw, 52px);
     line-height: 1.15;
     margin: 0;
     text-wrap: balance;
     color: var(--accent);
-    text-shadow: 0 3px 0 var(--line);
+    text-shadow: 0 3px 0 var(--line), 0 6px 0 var(--soft);
   }
-  .sub { margin: 8px 0 0; color: var(--muted); }
+  .sub { margin: 10px 0 0; color: var(--muted); }
+  .spark { position: absolute; width: 22px; height: 22px; fill: var(--sun); }
+  .spark.a { left: 6%; top: 18px; } .spark.b { right: 8%; top: 40px; width: 16px; height: 16px; fill: var(--pink); }
+  .spark.c { left: 14%; top: 98px; width: 14px; height: 14px; fill: var(--mint); } .spark.d { right: 15%; top: 8px; width: 14px; height: 14px; fill: var(--lav); }
+  @media (max-width: 520px) { .spark.a { left: 0; } .spark.b { right: 0; } .spark.c, .spark.d { display: none; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .mascot { animation: bob 2.6s ease-in-out infinite; }
+    @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+    .mascot .heart { animation: floaty 2.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    .mascot .heart.h2 { animation-delay: 1.1s; }
+    @keyframes floaty { 0%, 100% { transform: translateY(0) scale(1); opacity: 1; } 50% { transform: translateY(-5px) scale(1.2); opacity: .7; } }
+    .mascot .eyes { animation: blink 4s infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+    .spark { animation: twinkle 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    .spark.b { animation-delay: .6s; } .spark.c { animation-delay: 1.2s; } .spark.d { animation-delay: 1.8s; }
+    @keyframes twinkle { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(.55) rotate(25deg); opacity: .6; } }
+    .tag { animation: wiggle 3.2s ease-in-out infinite; }
+    @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(2deg); } }
+  }
 
-  .stage { display: grid; grid-template-columns: 1fr; gap: 22px; align-items: start; }
+  .stage { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
   @media (min-width: 860px) { .stage { grid-template-columns: 1fr 1fr; gap: 32px; } }
   .stage > * { min-width: 0; }
+  .col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
 
   .card {
     background: var(--surface);
     border: 3px solid var(--line);
-    border-radius: 28px;
+    border-radius: 32px;
     padding: 20px;
-    box-shadow: 0 6px 0 var(--line);
+    box-shadow: 0 7px 0 var(--line);
   }
 
   /* 돌림판 */
@@ -117,11 +160,11 @@
     display: block; width: 100%; height: 100%;
     border-radius: 50%;
     border: 6px solid var(--surface);
-    box-shadow: 0 0 0 4px var(--accent), 0 8px 0 4px var(--accent-deep);
+    box-shadow: 0 0 0 5px var(--accent), 0 9px 0 5px var(--accent-deep);
     transform: rotate(0deg);
   }
   .pointer {
-    position: absolute; top: -14px; left: 50%; width: 38px; height: 44px;
+    position: absolute; top: -16px; left: 50%; width: 40px; height: 46px;
     transform: translateX(-50%); z-index: 3;
     filter: drop-shadow(0 3px 0 rgba(0,0,0,.15));
   }
@@ -132,7 +175,7 @@
   }
   .eye { position: absolute; top: 36%; width: 12%; height: 17%; background: var(--fg); border-radius: 50%; }
   .eye.l { left: 26%; } .eye.r { right: 26%; }
-  .cheek { position: absolute; top: 56%; width: 15%; height: 10%; background: var(--accent); opacity: .45; border-radius: 50%; }
+  .cheek { position: absolute; top: 56%; width: 15%; height: 10%; background: var(--pink); opacity: .6; border-radius: 50%; }
   .cheek.l { left: 10%; } .cheek.r { right: 10%; }
   .mouth {
     position: absolute; left: 50%; top: 56%; width: 26%; height: 15%;
@@ -141,84 +184,123 @@
   }
   .hub.spinning .mouth { width: 13%; height: 17%; border: 3px solid var(--fg); border-radius: 50%; top: 58%; }
   @media (prefers-reduced-motion: no-preference) {
-    .eye { animation: blink 4s infinite; }
-    @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+    .hub .eye { animation: blink 4s infinite; }
   }
 
   .spin-btn {
-    display: block; width: 100%; margin-top: 26px;
-    font-family: var(--display); font-size: 24px; letter-spacing: 0.03em;
+    display: block; width: 100%; margin-top: 28px;
+    font-family: var(--display); font-size: 25px; letter-spacing: 0.03em;
     background: var(--accent); color: var(--accent-ink);
-    border: 0; border-radius: 22px; padding: 14px 18px;
-    box-shadow: 0 6px 0 var(--accent-deep);
+    border: 0; border-radius: 999px; padding: 14px 18px;
+    box-shadow: 0 7px 0 var(--accent-deep);
     cursor: pointer;
     transition: transform .08s, box-shadow .08s;
   }
-  .spin-btn:hover { transform: translateY(-1px); box-shadow: 0 7px 0 var(--accent-deep); }
-  .spin-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--accent-deep); }
-  .spin-btn:disabled { opacity: .7; cursor: default; transform: translateY(3px); box-shadow: 0 3px 0 var(--accent-deep); }
+  .spin-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 0 var(--accent-deep); }
+  .spin-btn:active { transform: translateY(6px); box-shadow: 0 1px 0 var(--accent-deep); }
+  .spin-btn:disabled { opacity: .75; cursor: default; transform: translateY(4px); box-shadow: 0 3px 0 var(--accent-deep); }
   button:focus-visible, input:focus-visible { outline: 3px solid var(--lav); outline-offset: 2px; }
 
+  /* 결과 */
   .result {
-    position: relative; margin-top: 18px; min-height: 92px;
-    background: var(--soft); border: 3px dashed var(--line); border-radius: 22px;
-    padding: 12px 16px; text-align: center;
+    position: relative; margin-top: 20px; min-height: 96px;
+    background: var(--soft); border: 3px dashed var(--line); border-radius: 26px;
+    padding: 14px 16px; text-align: center;
     display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px;
     overflow: hidden;
   }
   .result .hint { color: var(--muted); }
   .result small { color: var(--muted); font-size: 15px; }
+  .result .big-emoji { font-size: 46px; line-height: 1.1; }
   .result strong {
     font-family: var(--display); font-weight: 400; font-size: clamp(30px, 8vw, 40px);
     color: var(--accent); line-height: 1.2; overflow-wrap: anywhere; text-wrap: balance;
   }
-  .result.pop strong { animation: pop .5s cubic-bezier(.3,1.6,.5,1); }
+  .kcal-badge {
+    margin-top: 6px; display: inline-flex; align-items: baseline; gap: 6px;
+    background: var(--sun); color: #5A3A00;
+    font-family: var(--display); font-size: 22px;
+    padding: 4px 16px; border-radius: 999px; box-shadow: 0 3px 0 rgba(0,0,0,.14);
+  }
+  .kcal-badge small { color: #5A3A00; opacity: .75; font-size: 13px; font-family: var(--body); }
+  .kcal-badge.none { background: var(--surface); color: var(--muted); font-size: 15px; border: 2px dashed var(--line); box-shadow: none; }
+  .comment { margin-top: 6px; color: var(--muted); font-size: 15px; }
+  .result.pop .big-emoji, .result.pop strong { animation: pop .55s cubic-bezier(.3,1.6,.5,1); }
   @keyframes pop { 0% { transform: scale(.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
   .confetti { position: absolute; top: -12px; width: 10px; height: 14px; border-radius: 3px; animation: fall 1.6s ease-in forwards; pointer-events: none; }
-  @keyframes fall { to { transform: translateY(140px) rotate(540deg); opacity: 0; } }
+  @keyframes fall { to { transform: translateY(160px) rotate(540deg); opacity: 0; } }
+
+  /* 운동 환산 */
+  .burn h2 { color: var(--mint-deep); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .burn-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .burn-top p { margin: 0; color: var(--muted); font-size: 14px; }
+  .weight { display: inline-flex; align-items: center; gap: 6px; background: var(--soft); border-radius: 999px; padding: 4px 6px 4px 14px; font-size: 15px; }
+  .weight input {
+    width: 64px; font: inherit; font-size: 16px; color: var(--fg); text-align: center;
+    background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 3px 4px;
+  }
+  .chips { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(138px, 1fr)); gap: 10px; }
+  .chip {
+    background: var(--soft); border: 3px solid transparent; border-radius: 22px;
+    padding: 10px 10px 9px; text-align: center; min-width: 0;
+  }
+  .chip.star { border-color: var(--mint); background: var(--surface); box-shadow: 0 4px 0 var(--mint); }
+  .chip .em { font-size: 30px; line-height: 1.1; display: block; }
+  .chip .nm { display: block; font-size: 14px; color: var(--muted); }
+  .chip .tm { display: block; font-family: var(--display); font-size: 21px; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .burn-note { margin: 12px 0 0; font-size: 13px; color: var(--muted); text-align: center; }
+  .burn-empty { color: var(--muted); text-align: center; padding: 8px 4px; }
 
   /* 메뉴 목록 */
-  h2 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 0 0 4px; color: var(--lav); }
+  h2 { font-family: var(--display); font-weight: 400; font-size: 25px; margin: 0 0 4px; color: var(--lav); }
   .count { color: var(--muted); margin: 0 0 14px; font-size: 14px; }
 
-  .add-form { display: flex; gap: 8px; margin-bottom: 14px; }
+  .add-form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
   .add-form input {
-    flex: 1; min-width: 0;
+    min-width: 0;
     font: inherit; font-size: 17px; color: var(--fg);
-    background: var(--surface); border: 3px solid var(--line); border-radius: 16px; padding: 9px 14px;
+    background: var(--surface); border: 3px solid var(--line); border-radius: 999px; padding: 9px 16px;
   }
+  .add-form #newItem { flex: 1 1 150px; }
+  .add-form #newKcal { flex: 0 1 112px; width: 112px; }
   .add-form input::placeholder { color: var(--muted); opacity: .8; }
   .add-btn {
     flex: none;
     font-family: var(--display); font-size: 18px;
-    background: var(--mint); color: #24493F;
-    border: 0; border-radius: 16px; padding: 0 18px;
-    box-shadow: 0 5px 0 #3FB79D;
+    background: var(--mint); color: var(--mint-ink);
+    border: 0; border-radius: 999px; padding: 9px 22px;
+    box-shadow: 0 5px 0 var(--mint-deep);
     cursor: pointer; transition: transform .08s, box-shadow .08s;
   }
-  .add-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 #3FB79D; }
+  .add-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 var(--mint-deep); }
   .add-btn:disabled { opacity: .55; cursor: default; }
-  .msg { min-height: 22px; margin: -6px 0 8px; font-size: 14px; color: var(--accent-deep); }
+  .msg { min-height: 22px; margin: 0 0 6px 6px; font-size: 14px; color: var(--accent-deep); }
 
   ul.rows {
     list-style: none; margin: 0; padding: 2px 6px 6px 2px;
     display: flex; flex-direction: column; gap: 8px;
-    max-height: 380px; overflow-y: auto;
+    max-height: 400px; overflow-y: auto;
   }
   .row {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--soft); border: 3px solid transparent; border-radius: 18px; padding: 3px 8px 3px 12px;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--soft); border: 3px solid transparent; border-radius: 999px; padding: 3px 8px 3px 12px;
   }
-  .row.won { border-color: var(--accent); }
+  .row.won { border-color: var(--accent); background: var(--surface); }
   .dot { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--line); }
-  .row input {
+  .row .nm-in {
     flex: 1; min-width: 0;
     font: inherit; font-size: 17px; color: var(--fg);
-    background: transparent; border: 0; padding: 8px 4px;
+    background: transparent; border: 0; padding: 8px 2px;
   }
-  .row input::placeholder { color: var(--muted); opacity: .7; }
+  .row .nm-in::placeholder { color: var(--muted); opacity: .7; }
+  .kc { flex: none; display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+  .kc input {
+    width: 58px; font: inherit; font-size: 15px; color: var(--fg); text-align: right;
+    background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 3px 8px;
+    font-variant-numeric: tabular-nums;
+  }
   .del {
-    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    flex: none; width: 32px; height: 32px; border-radius: 50%;
     border: 0; background: var(--surface); color: var(--muted);
     font-size: 20px; line-height: 1; cursor: pointer;
     box-shadow: 0 2px 0 var(--line);
@@ -240,34 +322,61 @@
 
 <div class="wrap">
   <header>
+    <svg class="spark a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z"/></svg>
+    <svg class="spark b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z"/></svg>
+    <svg class="spark c" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z"/></svg>
+    <svg class="spark d" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z"/></svg>
+    <svg class="mascot" viewBox="0 0 120 104" aria-hidden="true">
+      <g transform="translate(18 2) scale(.55)"><path class="heart" d="M60 12 C54 2 44 8 50 16 L60 24 L70 16 C76 8 66 2 60 12 Z"/></g>
+      <g transform="translate(72 0) scale(.45)"><path class="heart h2" d="M20 12 C14 2 4 8 10 16 L20 24 L30 16 C36 8 26 2 20 12 Z"/></g>
+      <path class="rice" d="M18 64 Q16 14 60 14 Q104 14 102 64 Z"/>
+      <path class="shine" d="M34 38 Q38 26 50 22"/>
+      <path class="bowl" d="M10 60 H110 Q108 96 60 98 Q12 96 10 60 Z"/>
+      <g class="eyes"><circle class="face" cx="46" cy="42" r="4.5"/><circle class="face" cx="74" cy="42" r="4.5"/></g>
+      <ellipse class="blush" cx="36" cy="52" rx="7" ry="4.5"/><ellipse class="blush" cx="84" cy="52" rx="7" ry="4.5"/>
+      <path class="smile" d="M53 50 Q60 58 67 50"/>
+    </svg>
     <span class="tag">오늘 뭐 먹지?</span>
     <h1>사랑이의 식사메뉴 추천</h1>
-    <p class="sub">고민될 땐 돌려돌려 돌림판!</p>
+    <p class="sub">돌려돌려 돌림판! 칼로리랑 운동 시간까지 알려줄게요</p>
   </header>
 
   <main class="stage">
-    <section class="card" aria-label="돌림판">
-      <div class="wheel-box">
-        <svg class="pointer" viewBox="0 0 38 44" aria-hidden="true">
-          <path d="M19 42 L4 12 Q2 4 10 3 L28 3 Q36 4 34 12 Z" fill="#FF7B54" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round"/>
-          <circle cx="19" cy="14" r="4.5" fill="#FFFFFF"/>
-        </svg>
-        <canvas id="wheel" width="720" height="720" role="img" aria-label="메뉴가 나뉜 돌림판"></canvas>
-        <div class="hub" id="hub" aria-hidden="true">
-          <span class="eye l"></span><span class="eye r"></span>
-          <span class="cheek l"></span><span class="cheek r"></span>
-          <span class="mouth"></span>
+    <div class="col">
+      <section class="card" aria-label="돌림판">
+        <div class="wheel-box">
+          <svg class="pointer" viewBox="0 0 38 44" aria-hidden="true">
+            <path d="M19 42 L4 12 Q2 4 10 3 L28 3 Q36 4 34 12 Z" fill="#FF7B54" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="round"/>
+            <circle cx="19" cy="14" r="4.5" fill="#FFFFFF"/>
+          </svg>
+          <canvas id="wheel" width="720" height="720" role="img" aria-label="메뉴가 나뉜 돌림판"></canvas>
+          <div class="hub" id="hub" aria-hidden="true">
+            <span class="eye l"></span><span class="eye r"></span>
+            <span class="cheek l"></span><span class="cheek r"></span>
+            <span class="mouth"></span>
+          </div>
         </div>
-      </div>
-      <button class="spin-btn" id="spin" type="button">메뉴 뽑기!</button>
-      <div class="result" id="result" aria-live="polite"></div>
-    </section>
+        <button class="spin-btn" id="spin" type="button">메뉴 뽑기!</button>
+        <div class="result" id="result" aria-live="polite"></div>
+      </section>
+
+      <section class="card burn" id="burn" aria-label="운동 환산" hidden>
+        <h2>이만큼 움직이면 소화 끝!</h2>
+        <div class="burn-top">
+          <p>내 몸무게로 계산해요</p>
+          <label class="weight" for="weight">몸무게 <input type="number" id="weight" min="30" max="150" step="1" inputmode="numeric" value="55"> kg</label>
+        </div>
+        <ul class="chips" id="chips"></ul>
+        <p class="burn-note" id="burnNote"></p>
+      </section>
+    </div>
 
     <section class="card" aria-label="메뉴 목록">
       <h2>메뉴 목록</h2>
       <p class="count" id="count"></p>
       <form class="add-form" id="addForm" autocomplete="off">
         <input type="text" id="newItem" maxlength="14" placeholder="먹고 싶은 메뉴를 적어요" aria-label="새 메뉴 이름">
+        <input type="number" id="newKcal" min="1" max="3000" step="10" inputmode="numeric" placeholder="kcal (선택)" aria-label="칼로리 (선택)">
         <button class="add-btn" id="add" type="submit">추가</button>
       </form>
       <p class="msg" id="msg" aria-live="polite"></p>
@@ -276,47 +385,100 @@
     </section>
   </main>
 
-  <footer>바꾼 메뉴는 이 브라우저에 저장돼요</footer>
+  <footer>칼로리는 1인분 기준 대략값이에요. 바꾼 메뉴는 이 브라우저에 저장돼요</footer>
 </div>
 
 <script>
 (function () {
   var PALETTE = ['#FFB3C7','#BFD7FF','#FFE29A','#BDEBD3','#D9C7FF','#FFC9A8','#A9E5EA','#F7B8EA','#CDEBA3','#FFD0D0','#B6C4FF','#F5E1A4'];
-  var DEFAULTS = ['김치찌개','된장찌개','비빔밥','불고기','삼겹살','치킨','떡볶이','김밥','라멘','초밥','돈까스','파스타','피자','햄버거','쌀국수','마라탕'];
-  var MAX = 24, MIN = 2, KEY = 'sarang-menu-items', SPIN_MS = 4800;
+  // [이름, 1인분 대략 kcal, 이모지]
+  var DEFAULTS = [
+    ['김치찌개', 450, '🍲'], ['된장찌개', 400, '🥘'], ['비빔밥', 640, '🍚'], ['불고기', 520, '🥩'],
+    ['삼겹살', 750, '🥓'], ['치킨', 900, '🍗'], ['떡볶이', 560, '🌶️'], ['김밥', 480, '🍙'],
+    ['라멘', 600, '🍜'], ['초밥', 500, '🍣'], ['돈까스', 900, '🍱'], ['파스타', 650, '🍝'],
+    ['피자', 600, '🍕'], ['햄버거', 550, '🍔'], ['쌀국수', 450, '🥢'], ['마라탕', 700, '🔥']
+  ];
+  // 운동별 MET (칼로리/시간 = MET x 몸무게kg)
+  var ACTIVITIES = [
+    { n: '스피닝', e: '🚴', met: 8.5, star: true },
+    { n: '러닝', e: '🏃', met: 9.0, star: true },
+    { n: '걷기', e: '🚶', met: 3.5 },
+    { n: '등산', e: '🥾', met: 6.5 },
+    { n: '수영', e: '🏊', met: 6.0 },
+    { n: '줄넘기', e: '🤸', met: 11.0 },
+    { n: '계단 오르기', e: '🪜', met: 8.0 },
+    { n: '요가', e: '🧘', met: 2.5 }
+  ];
+  var MAX = 24, MIN = 2, KEY = 'sarang-menu-v2', OLD_KEY = 'sarang-menu-items', WKEY = 'sarang-weight', SPIN_MS = 4800;
+  var FALLBACK_EMOJI = '🍽️';
 
   var canvas = document.getElementById('wheel');
   var ctx = canvas.getContext('2d');
   var rowsEl = document.getElementById('rows');
   var form = document.getElementById('addForm');
   var newInput = document.getElementById('newItem');
+  var newKcal = document.getElementById('newKcal');
   var addBtn = document.getElementById('add');
   var spinBtn = document.getElementById('spin');
   var resultEl = document.getElementById('result');
+  var burnEl = document.getElementById('burn');
+  var chipsEl = document.getElementById('chips');
+  var burnNote = document.getElementById('burnNote');
+  var weightEl = document.getElementById('weight');
   var countEl = document.getElementById('count');
   var msgEl = document.getElementById('msg');
   var resetBtn = document.getElementById('reset');
   var hub = document.getElementById('hub');
 
-  var items = load() || DEFAULTS.slice();
-  var rotation = 0;
-  var spinning = false;
-  var timer = null;
-  var resetArmed = false;
-  var resetTimer = null;
+  function defaultItems() { return DEFAULTS.map(function (d) { return { n: d[0], k: d[1], e: d[2] }; }); }
+  function lookupDefault(name) {
+    for (var i = 0; i < DEFAULTS.length; i++) if (DEFAULTS[i][0] === name.trim()) return DEFAULTS[i];
+    return null;
+  }
+  function okItem(o) { return o && typeof o.n === 'string' && (o.k === null || typeof o.k === 'number') && typeof o.e === 'string'; }
 
   function load() {
     try {
       var raw = localStorage.getItem(KEY);
-      if (!raw) return null;
-      var arr = JSON.parse(raw);
-      if (Array.isArray(arr) && arr.length >= MIN && arr.length <= MAX && arr.every(function (s) { return typeof s === 'string'; })) return arr;
+      if (raw) {
+        var arr = JSON.parse(raw);
+        if (Array.isArray(arr) && arr.length >= MIN && arr.length <= MAX && arr.every(okItem)) return arr;
+      }
+      var old = localStorage.getItem(OLD_KEY);
+      if (old) {
+        var names = JSON.parse(old);
+        if (Array.isArray(names) && names.length >= MIN && names.length <= MAX && names.every(function (s) { return typeof s === 'string'; })) {
+          return names.map(function (s) {
+            var d = lookupDefault(s);
+            return d ? { n: s, k: d[1], e: d[2] } : { n: s, k: null, e: FALLBACK_EMOJI };
+          });
+        }
+      }
     } catch (e) {}
     return null;
   }
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {}
   }
+  function loadWeight() {
+    try {
+      var w = Number(localStorage.getItem(WKEY));
+      if (w >= 30 && w <= 150) return w;
+    } catch (e) {}
+    return 55;
+  }
+  function saveWeight(w) {
+    try { localStorage.setItem(WKEY, String(w)); } catch (e) {}
+  }
+
+  var items = load() || defaultItems();
+  var rotation = 0;
+  var spinning = false;
+  var timer = null;
+  var resetArmed = false;
+  var resetTimer = null;
+  var lastWinner = null;
+  weightEl.value = String(loadWeight());
 
   function colorAt(i, n) {
     var c = PALETTE[i % PALETTE.length];
@@ -326,7 +488,7 @@
 
   function valid() {
     var out = [];
-    items.forEach(function (t, i) { var s = t.trim(); if (s) out.push({ text: s, i: i }); });
+    items.forEach(function (t, i) { var s = t.n.trim(); if (s) out.push({ text: s, i: i, k: t.k, e: t.e }); });
     return out;
   }
 
@@ -382,16 +544,24 @@
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#4F3328';
-      var label = fitText(list[j].text, r - 130, base);
-      ctx.fillText(label, r - 30, 2);
+      var label = fitText(list[j].text, r - 140, base);
+      ctx.fillText(label, r - 36, 2);
       ctx.restore();
+    }
+    // 가장자리 전구
+    for (var b = 0; b < 24; b++) {
+      var ang = (b / 24) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(c + Math.cos(ang) * (r - 16), c + Math.sin(ang) * (r - 16), 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = b % 2 ? '#FFFFFF' : '#FFE9A8';
+      ctx.fill();
     }
   }
 
   function renderRows(focusIdx) {
     rowsEl.innerHTML = '';
     var n = items.length;
-    items.forEach(function (text, i) {
+    items.forEach(function (it, i) {
       var li = document.createElement('li');
       li.className = 'row';
       li.dataset.i = String(i);
@@ -402,13 +572,14 @@
 
       var input = document.createElement('input');
       input.type = 'text';
+      input.className = 'nm-in';
       input.id = 'opt-' + i;
       input.maxLength = 14;
-      input.value = text;
+      input.value = it.n;
       input.placeholder = '메뉴 ' + (i + 1);
-      input.setAttribute('aria-label', '메뉴 ' + (i + 1));
+      input.setAttribute('aria-label', '메뉴 ' + (i + 1) + ' 이름');
       input.addEventListener('input', function () {
-        items[i] = input.value;
+        items[i].n = input.value;
         save();
         drawWheel();
         updateCount();
@@ -418,22 +589,43 @@
         if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
       });
 
+      var kc = document.createElement('label');
+      kc.className = 'kc';
+      var kin = document.createElement('input');
+      kin.type = 'number';
+      kin.id = 'kc-' + i;
+      kin.min = '1'; kin.max = '3000'; kin.step = '10';
+      kin.setAttribute('inputmode', 'numeric');
+      kin.placeholder = '-';
+      kin.value = it.k == null ? '' : String(it.k);
+      kin.setAttribute('aria-label', '메뉴 ' + (i + 1) + ' 칼로리');
+      kin.addEventListener('input', function () {
+        var v = Number(kin.value);
+        items[i].k = kin.value === '' || !(v > 0) ? null : Math.min(3000, Math.round(v));
+        save();
+        clearResult();
+      });
+      kc.appendChild(kin);
+      kc.appendChild(document.createTextNode('kcal'));
+
       var del = document.createElement('button');
       del.type = 'button';
       del.className = 'del';
       del.textContent = '×';
-      del.setAttribute('aria-label', (text || '메뉴 ' + (i + 1)) + ' 삭제');
+      del.setAttribute('aria-label', (it.n || '메뉴 ' + (i + 1)) + ' 삭제');
       del.disabled = n <= MIN;
       del.addEventListener('click', function () { removeItem(i); });
 
       li.appendChild(dot);
       li.appendChild(input);
+      li.appendChild(kc);
       li.appendChild(del);
       rowsEl.appendChild(li);
     });
     var full = n >= MAX;
     addBtn.disabled = full;
     newInput.disabled = full;
+    newKcal.disabled = full;
     newInput.placeholder = full ? '최대 ' + MAX + '개까지 넣을 수 있어요' : '먹고 싶은 메뉴를 적어요';
     updateCount();
     if (typeof focusIdx === 'number') {
@@ -446,9 +638,7 @@
     countEl.textContent = '지금 ' + valid().length + '개가 돌림판에 올라가 있어요 (최대 ' + MAX + '개)';
   }
 
-  function showMsg(t) {
-    msgEl.textContent = t || '';
-  }
+  function showMsg(t) { msgEl.textContent = t || ''; }
 
   function addItem(e) {
     if (e) e.preventDefault();
@@ -456,10 +646,20 @@
     var t = newInput.value.trim();
     if (!t) { showMsg('메뉴 이름을 먼저 적어주세요'); newInput.focus(); return; }
     if (items.length >= MAX) { showMsg('메뉴는 최대 ' + MAX + '개까지예요'); return; }
-    var dup = items.some(function (x) { return x.trim() === t; });
-    if (dup) { showMsg('"' + t + '"은(는) 이미 있어요'); return; }
-    items.push(t);
+    if (items.some(function (x) { return x.n.trim() === t; })) { showMsg('"' + t + '"은(는) 이미 있어요'); return; }
+    var k = null;
+    if (newKcal.value !== '') {
+      var v = Number(newKcal.value);
+      if (!(v > 0)) { showMsg('칼로리는 1 이상의 숫자로 적어주세요'); newKcal.focus(); return; }
+      k = Math.min(3000, Math.round(v));
+    } else {
+      var d = lookupDefault(t);
+      if (d) k = d[1];
+    }
+    var d2 = lookupDefault(t);
+    items.push({ n: t, k: k, e: d2 ? d2[2] : FALLBACK_EMOJI });
     newInput.value = '';
+    newKcal.value = '';
     showMsg('');
     save();
     renderRows(items.length - 1);
@@ -479,8 +679,10 @@
   }
 
   function clearResult() {
+    lastWinner = null;
     resultEl.className = 'result';
     resultEl.innerHTML = '<span class="hint">돌림판을 돌려서 정해봐요</span>';
+    burnEl.hidden = true;
     var won = rowsEl.querySelector('.won');
     if (won) won.classList.remove('won');
   }
@@ -497,7 +699,7 @@
 
   function confetti() {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    for (var k = 0; k < 26; k++) {
+    for (var k = 0; k < 28; k++) {
       var p = document.createElement('span');
       p.className = 'confetti';
       p.style.left = (Math.random() * 100) + '%';
@@ -508,12 +710,79 @@
     }
   }
 
+  function fmtTime(mins) {
+    if (mins < 1) mins = 1;
+    var h = Math.floor(mins / 60), m = mins % 60;
+    if (h === 0) return m + '분';
+    if (m === 0) return h + '시간';
+    return h + '시간 ' + m + '분';
+  }
+
+  function comment(k) {
+    if (k <= 400) return '가볍게 먹기 딱 좋아요';
+    if (k <= 650) return '든든한 한 끼예요';
+    if (k <= 850) return '꽤 푸짐해요';
+    return '오늘은 운동 각오하기!';
+  }
+
+  function renderBurn() {
+    if (!lastWinner) { burnEl.hidden = true; return; }
+    burnEl.hidden = false;
+    chipsEl.innerHTML = '';
+    var k = lastWinner.k;
+    if (k == null) {
+      burnNote.textContent = '';
+      var li0 = document.createElement('li');
+      li0.className = 'burn-empty';
+      li0.style.gridColumn = '1 / -1';
+      li0.textContent = '메뉴 목록에서 이 메뉴의 kcal를 적으면 운동 시간을 계산해줘요';
+      chipsEl.appendChild(li0);
+      return;
+    }
+    var w = Number(weightEl.value);
+    if (!(w >= 30 && w <= 150)) w = 55;
+    ACTIVITIES.forEach(function (a) {
+      var mins = Math.round(k / (a.met * w) * 60);
+      var li = document.createElement('li');
+      li.className = 'chip' + (a.star ? ' star' : '');
+      var em = document.createElement('span'); em.className = 'em'; em.textContent = a.e;
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = a.n;
+      var tm = document.createElement('span'); tm.className = 'tm'; tm.textContent = fmtTime(mins);
+      li.appendChild(em); li.appendChild(nm); li.appendChild(tm);
+      chipsEl.appendChild(li);
+    });
+    burnNote.textContent = lastWinner.text + ' ' + k + 'kcal, 몸무게 ' + w + 'kg 기준으로 계산한 대략 시간이에요';
+  }
+
+  function showResult(w) {
+    lastWinner = w;
+    resultEl.className = 'result pop';
+    resultEl.innerHTML = '<span class="big-emoji"></span><small>오늘의 메뉴는</small><strong></strong><div class="kcal-badge"></div><div class="comment"></div>';
+    resultEl.querySelector('.big-emoji').textContent = w.e || FALLBACK_EMOJI;
+    resultEl.querySelector('strong').textContent = w.text;
+    var badge = resultEl.querySelector('.kcal-badge');
+    var cm = resultEl.querySelector('.comment');
+    if (w.k == null) {
+      badge.className = 'kcal-badge none';
+      badge.textContent = '칼로리 정보가 없어요';
+      cm.textContent = '';
+    } else {
+      badge.innerHTML = '';
+      badge.appendChild(document.createTextNode('약 ' + w.k + ' kcal'));
+      var sm = document.createElement('small'); sm.textContent = '1인분'; badge.appendChild(sm);
+      cm.textContent = comment(w.k);
+    }
+    renderBurn();
+  }
+
   function setBusy(b) {
     spinning = b;
     spinBtn.disabled = b;
     resetBtn.disabled = b;
-    newInput.disabled = b || items.length >= MAX;
-    addBtn.disabled = b || items.length >= MAX;
+    var full = items.length >= MAX;
+    newInput.disabled = b || full;
+    newKcal.disabled = b || full;
+    addBtn.disabled = b || full;
   }
 
   function spin() {
@@ -550,9 +819,7 @@
       spinBtn.textContent = '한 번 더 뽑기';
       hub.classList.remove('spinning');
       var w = list[winner];
-      resultEl.className = 'result pop';
-      resultEl.innerHTML = '<small>오늘의 메뉴는</small><strong></strong>';
-      resultEl.querySelector('strong').textContent = w.text;
+      showResult(w);
       var row = rowsEl.querySelector('.row[data-i="' + w.i + '"]');
       if (row) { row.classList.add('won'); row.scrollIntoView({ block: 'nearest' }); }
       confetti();
@@ -569,7 +836,7 @@
       return;
     }
     disarm();
-    items = DEFAULTS.slice();
+    items = defaultItems();
     save();
     showMsg('');
     renderRows();
@@ -585,6 +852,10 @@
   form.addEventListener('submit', addItem);
   resetBtn.addEventListener('click', resetItems);
   newInput.addEventListener('input', function () { showMsg(''); });
+  weightEl.addEventListener('input', function () {
+    var w = Number(weightEl.value);
+    if (w >= 30 && w <= 150) { saveWeight(w); renderBurn(); }
+  });
 
   renderRows();
   clearResult();
